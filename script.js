@@ -2,9 +2,11 @@ const botao = document.getElementById('btnCadastrar');
 const inputNome = document.getElementById('nome');
 const inputIdade = document.getElementById('idade');
 const lista = document.getElementById('lista-usuarios');
-let usuarioEmEdicao = null;
 const usuarios = [];
-const edicao = {};
+const edicao = {
+    usuario: null,
+    textoSpan: null
+};
 
 function zerarCampo(input) {
     input.value = "";
@@ -12,21 +14,24 @@ function zerarCampo(input) {
 
 botao.addEventListener('click', function () {
     if (inputNome.value !== "" && inputIdade.value !== "") {
-        if (usuarioEmEdicao === null) {
+        if (edicao.usuario === null) {
             const usuario = {
                 nome: inputNome.value,
                 idade: inputIdade.value
             }
             usuarios.push(usuario);
-            console.log(usuarios);
+
             const textoSpan = document.createElement('span');
-            const btnExcluir = document.createElement('button');
-            const btnEditar = document.createElement('button');
-            const novoLi = document.createElement('li');
-            
-            btnExcluir.innerText = `Excluir`;
-            btnEditar.innerText = `Editar`;
             textoSpan.innerText = `${usuario.nome} - ${usuario.idade} anos`;
+
+            const btnExcluir = document.createElement('button');
+            btnExcluir.innerText = `Excluir`;
+            
+            const btnEditar = document.createElement('button');
+            btnEditar.innerText = `Editar`;
+            
+            const novoLi = document.createElement('li');
+
             novoLi.appendChild(textoSpan);
             novoLi.appendChild(btnEditar);
             novoLi.appendChild(btnExcluir);
@@ -37,21 +42,23 @@ botao.addEventListener('click', function () {
             btnEditar.addEventListener('click', function () {
                 inputNome.value = usuario.nome;
                 inputIdade.value = usuario.idade;
-                usuarioEmEdicao = usuario;
-                edicao.nomeUsuario = usuario.nome;
-                edicao.idadeUsuario = usuario.idade;
                 edicao.textoSpan = textoSpan;
-                console.log(edicao);
+                edicao.usuario = usuario;
             });
             btnExcluir.addEventListener('click', function () {
                 novoLi.remove();
+                usuarios.pop();
             });
         } else {
-            usuarioEmEdicao.nome = inputNome.value;
-            usuarioEmEdicao.idade = inputIdade.value;
+            edicao.usuario.nome = inputNome.value;
+            edicao.usuario.idade = inputIdade.value;
+
+            edicao.textoSpan.innerText = `${edicao.usuario.nome} - ${edicao.usuario.idade} anos`;
+
             zerarCampo(inputNome);
             zerarCampo(inputIdade);
-            usuarioEmEdicao = null;
+
+            edicao.usuario = null;
         }
     }
 });
