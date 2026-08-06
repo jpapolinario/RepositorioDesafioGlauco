@@ -1,3 +1,4 @@
+//Ponto central para os comportamentos JavaScript
 const inputNome = document.getElementById('nome');
 const inputIdade = document.getElementById('idade');
 
