@@ -9,10 +9,21 @@
 
 <body>
     <h1>Cadastro de usuário</h1>
+
+
+    <label for="nome">Nome:</label>
     <input type="text" id="nome">
-    <input type="text" id="idade">
+
+<!--<label for="dataNascimento">Data de dataNascimento:</label>
+    <input type="date" id="dataNascimento" min="1900-01-01" max="2026-01-01" required>
+ -->
+
+    <label for="idade">Idade:</label>
+    <input type="number" id="idade" min="0" max="150">
 
     <button id="btnCadastrar">Cadastrar</button>
+    <button id="btnCancelar" hidden>Cancelar</button>
+
     <ul id="lista-usuarios"></ul>
 
     <script src="script.js"></script>
