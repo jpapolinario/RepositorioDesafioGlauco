@@ -33,4 +33,4 @@ function filtrarUsuarios() {
 }
 
 carregarUsuarios();
-listarUsuarios();
+listarUsuarios(usuarios);
