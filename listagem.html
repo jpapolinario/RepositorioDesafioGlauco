@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários cadastrados</title>
+</head>
+
+<body>
+    <h1>Usuários cadastrados</h1>
+
+    <a href="index.html">Voltar para cadastro</a>
+
+    <br><br>
+
+    <label for="filtro">Pesquisar:</label>
+    <input type="text" id="filtro">
+
+    <button type="button" onclick="filtrarUsuarios()">
+        Buscar
+    </button>
+
+    <br><br>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+
+        <tbody id="lista-usuarios">
+        </tbody>
+    </table>
+
+    <script src="dados.js"></script>
+    <script src="listagem.js"></script>
+</body>
+
+</html>
