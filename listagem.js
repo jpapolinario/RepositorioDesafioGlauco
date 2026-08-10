@@ -37,7 +37,7 @@ function filtrarUsuarios() {
 }
 function editarUsuario(id) {
     localStorage.setItem("usuarioEditando", id);
-    window.location.href = "index.html";
+    window.location.href = "cadastro.html";
 };
 function excluirUsuario(id) {
     const querExcluir = confirm("Tem certeza que deseja excluir este usuário?");

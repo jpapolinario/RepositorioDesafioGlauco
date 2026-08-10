@@ -42,7 +42,7 @@ function validarFormulario() {
         alert("Cidade é obrigatória.");
         return false;
     }
-    
+
     if (inputEndereco.value.trim() === "") {
         alert("Endereço é obrigatório.");
         return false;
@@ -105,6 +105,8 @@ function criarCadastro() {
     salvarUsuarios();
     salvarId();
 
+    alert("Cadastro realizado com sucesso!");
+
     console.log(usuarios);
 }
 function atualizarUsuario() {
@@ -154,35 +156,76 @@ function mascaraData() {
         data = data.replace(/^(\d{2})\/(\d{2})(\d)/, "$1/$2/$3");
     }
 
-    inputDataNascimento.value = data;
+    let partes = data.split("/");
 
-    if (data.length === 10) {
-        calcularIdade();
+    if (partes[0] !== undefined && partes[0].length === 2) {
+        let dia = Number(partes[0]);
+
+        if (dia < 1) {
+            partes[0] = "01";
+        }
+
+        if (dia > 31) {
+            partes[0] = "31";
+        }
     }
+
+    if (partes[1] !== undefined && partes[1].length === 2) {
+        let mes = Number(partes[1]);
+
+        if (mes < 1) {
+            partes[1] = "01";
+        }
+
+        if (mes > 12) {
+            partes[1] = "12";
+        }
+    }
+
+    if (partes[2] !== undefined && partes[2].length === 4) {
+        let ano = Number(partes[2]);
+
+        if (ano < 1900) {
+            partes[2] = "1900";
+        }
+
+        if (ano > 2026) {
+            const hoje = new Date();
+            partes[2] = hoje.getFullYear();
+        }
+    }
+
+    inputDataNascimento.value = partes.join("/");
 }
 
 function calcularIdade() {
-    const data = inputDataNascimento.value;
+    const partes = inputDataNascimento.value.split("/");
 
-    if (data.length !== 10) {
+    if (partes.length !== 3) {
         inputIdade.value = "";
         return;
     }
 
-    const partes = data.split("/");
-
     const dia = Number(partes[0]);
-    const mes = Number(partes[1]) - 1;
+    const mes = Number(partes[1]);
     const ano = Number(partes[2]);
 
-    const nascimento = new Date(ano, mes, dia);
+    if (!dia || !mes || !ano) {
+        inputIdade.value = "";
+        return;
+    }
+
+    const nascimento = new Date(ano, mes - 1, dia);
     const hoje = new Date();
 
     let idade = hoje.getFullYear() - nascimento.getFullYear();
 
-    const mesAtual = hoje.getMonth() - nascimento.getMonth();
+    const mesAtual = hoje.getMonth();
+    const diaAtual = hoje.getDate();
 
-    if (mesAtual < 0 || (mesAtual === 0 && hoje.getDate() < nascimento.getDate())
+    if (
+        mesAtual < mes - 1 ||
+        (mesAtual === mes - 1 && diaAtual < dia)
     ) {
         idade--;
     }
@@ -319,7 +362,22 @@ function validarEmail() {
         return true;
     }
 
-    if (!email.includes("@")) {
+    const partes = email.split("@");
+
+    if (partes.length !== 2) {
+        alert("E-mail inválido.");
+        return false;
+    }
+
+    const antesDoArroba = partes[0];
+    const depoisDoArroba = partes[1];
+
+    if (antesDoArroba === "" || depoisDoArroba === "") {
+        alert("E-mail inválido.");
+        return false;
+    }
+
+    if (!depoisDoArroba.includes(".")) {
         alert("E-mail inválido.");
         return false;
     }
