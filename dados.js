@@ -10,6 +10,7 @@ function carregarUsuarios() {
     const dados = localStorage.getItem("usuarios");
 
     if (dados !== null) {
+        usuarios.length = 0;
         usuarios.push(...JSON.parse(dados));
     }
 }

@@ -9,15 +9,14 @@
 </head>
 
 <body>
-    <h1>Cadastro de usuário</h1>
+    <h1>Cadastro</h1>
 
     <form>
         <label for="nome">Nome:</label>
         <input type="text" id="nome">
 
         <label for="dataNascimento">Data de nascimento:</label>
-        <input type="date" id="dataNascimento" onchange="calcularIdade()">
-
+        <input type="text" id="dataNascimento" maxlength="10" oninput="mascaraData()" onchange="calcularIdade()">
         <label for="idade">Idade:</label>
         <input type="number" id="idade" readonly>
 
@@ -33,23 +32,25 @@
         </select>
 
         <label for="estadoCivil">Estado Civil:</label>
-        <select id="estadoCivil">
-            <option value="">Selecione</option>
+        <select id="estadoCivil" onchange="controlarConjuge()">            
             <option value="Solteiro">Solteiro</option>
             <option value="Casado">Casado</option>
             <option value="Divorciado">Divorciado</option>
         </select>
 
-        <label for="conjuge">Cônjuge:</label>
-        <input type="text" id="conjuge">
+        <div id="campoConjuge" style="display: none;">
+            <label for="conjuge">Cônjuge:</label>
+            <input type="text" id="conjuge">
+        </div>
+
+        <label for="cidade">Cidade:</label>
+        <input type="text" id="cidade">
 
         <label for="endereco">Endereço:</label>
         <input type="text" id="endereco">
 
         <label for="cep">CEP:</label>
-        <input type="text" id="cep" maxlength="9" oninput="mascararCep()">
-        <label for="cidade">Cidade:</label>
-        <input type="text" id="cidade">
+        <input type="text" id="cep" maxlength="9" oninput="mascaraCep()">
 
         <label for="estado">Estado:</label>
         <input type="text" id="estado">

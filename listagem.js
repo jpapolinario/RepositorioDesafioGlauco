@@ -13,8 +13,12 @@ function listarUsuarios(usuariosParaListar) {
             <td>${usuario.nome}</td>
             <td>${usuario.cpf}</td>
             <td>
-                <button type="button">Editar</button>
-                <button type="button">Excluir</button>
+                <button type="button" onclick="editarUsuario(${usuario.id})">
+                    Editar
+                </button>
+                <button type="button" onclick="excluirUsuario(${usuario.id})">
+                    Excluir
+                </button>
             </td>
         `;
 
@@ -30,6 +34,31 @@ function filtrarUsuarios() {
     });
 
     listarUsuarios(usuariosFiltrados);
+}
+function editarUsuario(id) {
+    localStorage.setItem("usuarioEditando", id);
+    window.location.href = "index.html";
+};
+function excluirUsuario(id) {
+    const querExcluir = confirm("Tem certeza que deseja excluir este usuário?");
+
+    if (!querExcluir) {
+        return;
+    }
+
+    const posicao = usuarios.findIndex(function (usuario) {
+        return usuario.id === id;
+    });
+
+    if (posicao === -1) {
+        return;
+    }
+
+    usuarios.splice(posicao, 1);
+
+    salvarUsuarios();
+
+    listarUsuarios(usuarios);
 }
 
 carregarUsuarios();
