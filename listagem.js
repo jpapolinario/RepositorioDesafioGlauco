@@ -1,5 +1,11 @@
 const listaUsuarios = document.getElementById('lista-usuarios');
 const inputFiltro = document.getElementById('filtro');
+const resultadoBusca = document.getElementById('resultadoBusca');
+const usuarioEditando = localStorage.getItem("usuarioEditando");
+
+if (usuarioEditando !== null) {
+    window.location.href = "cadastro.html";
+}
 
 function listarUsuarios(usuariosParaListar) {
     listaUsuarios.innerHTML = "";
@@ -25,15 +31,36 @@ function listarUsuarios(usuariosParaListar) {
         listaUsuarios.appendChild(linha);
     }
 }
+function removerAcentos(texto) {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
 function filtrarUsuarios() {
-    const filtro = inputFiltro.value.trim().toLowerCase();
+    const textoBusca = inputFiltro.value.trim();
+
+    if (textoBusca === "") {
+        resultadoBusca.innerText = "Digite um nome ou CPF para realizar uma busca.";
+        listarUsuarios(usuarios);
+        return;
+    }
+
+    const filtro = removerAcentos(textoBusca.toLowerCase());
 
     const usuariosFiltrados = usuarios.filter(function (usuario) {
-        return usuario.nome.toLowerCase().includes(filtro)
+        const nome = removerAcentos(usuario.nome.toLowerCase());
+
+        return nome.includes(filtro)
             || usuario.cpf.includes(filtro);
     });
 
     listarUsuarios(usuariosFiltrados);
+
+    if (usuariosFiltrados.length === 0) {
+        resultadoBusca.innerText =
+            `Nenhum usuário encontrado para "${textoBusca}".`;
+    } else {
+        resultadoBusca.innerText =
+            `Busca por "${textoBusca}": ${usuariosFiltrados.length} usuário(s) encontrado(s).`;
+    }
 }
 function editarUsuario(id) {
     localStorage.setItem("usuarioEditando", id);

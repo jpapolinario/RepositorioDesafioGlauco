@@ -12,15 +12,44 @@ const inputCidade = document.getElementById('cidade');
 const inputEstado = document.getElementById('estado');
 const inputComplemento = document.getElementById('complemento');
 const inputEmail = document.getElementById('email');
+const tituloCadastro = document.getElementById('tituloCadastro');
+const botaoCadastro = document.getElementById('botaoCadastro');
+const botaoCancelar = document.getElementById('botaoCancelar');
+const linkListagem = document.getElementById('linkListagem');
 
 function validarFormulario() {
+    const idEditando = localStorage.getItem("usuarioEditando");
+    const idAtual = idEditando !== null ? Number(idEditando) : null;
+
     if (inputNome.value.trim() === "") {
         alert("Nome é obrigatório.");
         return false;
     }
 
+    if (!/^[A-Za-zÀ-ÿ ]+$/.test(inputNome.value.trim())) {
+        alert("O nome deve conter apenas letras.");
+        return false;
+    }
+
+    if (nomeJaExiste(inputNome.value, idAtual)) {
+        alert("Este nome já está cadastrado.");
+        return false;
+    }
+
     if (inputDataNascimento.value === "") {
         alert("Data de nascimento é obrigatória.");
+        return false;
+    }
+
+    if (!validarDataNascimento()) {
+        const idade = obterIdade(inputDataNascimento.value);
+
+        if (idade > 122) {
+            alert("A idade máxima permitida é 122 anos.");
+        } else {
+            alert("Data de nascimento inválida.");
+        }
+
         return false;
     }
 
@@ -30,6 +59,11 @@ function validarFormulario() {
     }
 
     if (!validarCpf()) {
+        return false;
+    }
+
+    if (cpfJaExiste(inputCpf.value, idAtual)) {
+        alert("Este CPF já está cadastrado.");
         return false;
     }
 
@@ -60,11 +94,11 @@ function validarFormulario() {
         return false;
     }
 
-
     if (inputEstado.value.trim() === "") {
         alert("Estado é obrigatório.");
         return false;
     }
+
     if (!validarEmail()) {
         return false;
     }
@@ -124,6 +158,12 @@ function atualizarUsuario() {
         return;
     }
 
+    const confirmarAlteracao = confirm(`Tem certeza que deseja alterar o usuário "${usuario.nome}"?`);
+
+    if (!confirmarAlteracao) {
+        return;
+    }
+
     usuario.nome = inputNome.value.trim();
     usuario.dataNascimento = inputDataNascimento.value;
     usuario.cpf = inputCpf.value.trim();
@@ -143,6 +183,19 @@ function atualizarUsuario() {
 
     window.location.href = "listagem.html";
 }
+
+function cancelarEdicao() {
+    const confirmarCancelamento = confirm("Tem certeza que deseja cancelar a edição? As alterações serão perdidas.");
+
+    if (!confirmarCancelamento) {
+        return;
+    }
+
+    localStorage.removeItem("usuarioEditando");
+
+    window.location.href = "listagem.html";
+}
+
 function mascaraData() {
     let data = inputDataNascimento.value;
 
@@ -186,7 +239,7 @@ function mascaraData() {
         let ano = Number(partes[2]);
 
         if (ano < 1900) {
-            partes[2] = "1900";
+            partes[2] = "1904";
         }
 
         if (ano > 2026) {
@@ -198,6 +251,69 @@ function mascaraData() {
     inputDataNascimento.value = partes.join("/");
 }
 
+function obterIdade(dataNascimento) { // Agora qualquer lugar do programa que precisar saber a idade pode chamar: obterIdade(inputDataNascimento.value)
+    const partes = dataNascimento.split("/");
+
+    const dia = Number(partes[0]);
+    const mes = Number(partes[1]);
+    const ano = Number(partes[2]);
+
+    const hoje = new Date();
+    const nascimento = new Date(ano, mes - 1, dia);
+
+    let idade = hoje.getFullYear() - nascimento.getFullYear();
+
+    if (
+        hoje.getMonth() < nascimento.getMonth() ||
+        (
+            hoje.getMonth() === nascimento.getMonth() &&
+            hoje.getDate() < nascimento.getDate()
+        )
+    ) {
+        idade--;
+    }
+
+    return idade;
+}
+
+function validarDataNascimento() {
+    const partes = inputDataNascimento.value.split("/");
+
+    if (partes.length !== 3) {
+        return false;
+    }
+
+    const dia = Number(partes[0]);
+    const mes = Number(partes[1]);
+    const ano = Number(partes[2]);
+
+    const hoje = new Date();
+    const dataNascimento = new Date(ano, mes - 1, dia);
+
+    // Verifica se a data realmente existe
+    if (
+        dataNascimento.getFullYear() !== ano ||
+        dataNascimento.getMonth() !== mes - 1 ||
+        dataNascimento.getDate() !== dia
+    ) {
+        return false;
+    }
+
+    // Não permite data futura
+    if (dataNascimento > hoje) {
+        return false;
+    }
+
+    const idade = obterIdade(inputDataNascimento.value);
+
+    // Limite máximo de 122 anos
+    if (idade > 122) {
+        return false;
+    }
+
+    return true;
+}
+
 function calcularIdade() {
     const partes = inputDataNascimento.value.split("/");
 
@@ -206,28 +322,11 @@ function calcularIdade() {
         return;
     }
 
-    const dia = Number(partes[0]);
-    const mes = Number(partes[1]);
-    const ano = Number(partes[2]);
+    const idade = obterIdade(inputDataNascimento.value);
 
-    if (!dia || !mes || !ano) {
+    if (idade < 0 || idade > 122) {
         inputIdade.value = "";
         return;
-    }
-
-    const nascimento = new Date(ano, mes - 1, dia);
-    const hoje = new Date();
-
-    let idade = hoje.getFullYear() - nascimento.getFullYear();
-
-    const mesAtual = hoje.getMonth();
-    const diaAtual = hoje.getDate();
-
-    if (
-        mesAtual < mes - 1 ||
-        (mesAtual === mes - 1 && diaAtual < dia)
-    ) {
-        idade--;
     }
 
     inputIdade.value = idade;
@@ -314,6 +413,27 @@ function validarCpf() {
 
     return true;
 }
+
+function cpfJaExiste(cpf, idAtual) {
+    const cpfNumeros = cpf.replace(/\D/g, "");
+
+    return usuarios.some(function (usuario) {
+        const cpfUsuario = usuario.cpf.replace(/\D/g, "");
+
+        return cpfUsuario === cpfNumeros && usuario.id !== idAtual;
+    });
+}
+
+function nomeJaExiste(nome, idAtual) {
+    const nomeDigitado = nome.trim().toLowerCase();
+
+    return usuarios.some(function (usuario) {
+        const nomeUsuario = usuario.nome.trim().toLowerCase();
+
+        return nomeUsuario === nomeDigitado && usuario.id !== idAtual;
+    });
+}
+
 function carregarUsuarioParaEditar() {
     const idEditando = localStorage.getItem("usuarioEditando");
 
@@ -344,6 +464,12 @@ function carregarUsuarioParaEditar() {
 
     calcularIdade();
     controlarConjuge();
+
+    tituloCadastro.innerText = "Editando";
+    botaoCadastro.innerText = "Salvar";
+
+    botaoCancelar.style.display = "inline";
+    linkListagem.style.display = "none";
 }
 function controlarConjuge() {
     if (inputEstadoCivil.value === "Casado") {

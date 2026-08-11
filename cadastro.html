@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <h1>Cadastro</h1>
+    <h1 id="tituloCadastro">Cadastro</h1>
 
     <form>
         <label for="nome">Nome:</label>
@@ -62,15 +62,19 @@
         <label for="email">Email:</label>
         <input type="text" id="email">
 
-        <button type="button" onclick="criarCadastro()">
+        <button type="button" id="botaoCadastro" onclick="criarCadastro()">
             Cadastrar
+        </button>
+
+        <button type="button" id="botaoCancelar" onclick="cancelarEdicao()" style="display: none;">
+            Cancelar
         </button>
 
     </form>
 
     <br>
 
-    <a href="listagem.html">Ver usuários cadastrados</a>
+    <a href="listagem.html" id="linkListagem">Ver usuários cadastrados</a>
 
     <script src="dados.js"></script>
     <script src="cadastro.js"></script>
